@@ -5,13 +5,27 @@ app.notesViewBag = (function () {
         $.get('templates/officeNoteTemplate.html', function (templ) {
             var rendered = Mustache.render(templ, data);
             $(selector).html(rendered);
-        })
+        }).then(function () {
+            $('#pagination').pagination({
+                items: data.count,
+                itemsOnPage: 10,
+                cssStyle: 'light-theme',
+                hrefTextPrefix: '#/office/'
+            }).pagination('selectPage', '#/office/');
+        });
     }
 
     function showMyNotes(selector, data) { 
         $.get('templates/myNoteTemplate.html', function (templ) {
             var rendered = Mustache.render(templ, data);
             $(selector).html(rendered);
+        }).then(function () {
+            $('#pagination').pagination({
+                items: data.count,
+                itemsOnPage: 10,
+                cssStyle: 'light-theme',
+                hrefTextPrefix: '#/myNotes/'
+            }).pagination('selectPage', '#/myNotes/');
 
             $('.edit').on('click', function () {
                 var noteId = $(this).parent().attr('data-id');
@@ -20,7 +34,7 @@ app.notesViewBag = (function () {
                     return a.id == noteId;
                 });
 
-                if(note.length) {
+                if (note.length) {
                     Sammy(function () {
                         this.trigger('showEditNote', note[0]);
                     })
@@ -33,13 +47,13 @@ app.notesViewBag = (function () {
                     return a.id == noteId;
                 });
 
-                if(note.length) {
+                if (note.length) {
                     Sammy(function () {
                         this.trigger('showDeleteNote', note[0]);
                     })
                 }
             })
-        })
+        });
     }
 
     function showAddNote(selector) {

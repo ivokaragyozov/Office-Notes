@@ -11,8 +11,18 @@ app.notesModel = (function () {
         return this.requester.get(requestUrl, true);
     };
 
+    NotesModel.prototype.getNotesForTodayByPage = function (deadline, page) {
+        var requestUrl = this.serviceUrl + '?query={"deadline":"' + deadline + '"}&resolve=_acl.creator&count=1000&limit=10&skip=' + (10 * (page - 1));
+        return this.requester.get(requestUrl, true);
+    };
+
     NotesModel.prototype.getNotesByCreatorId = function (creatorId) {
         var requestUrl = this.serviceUrl + '?query={"_acl.creator":"' + creatorId + '"}';
+        return this.requester.get(requestUrl, true);
+    };
+
+    NotesModel.prototype.getNotesByCreatorIdByPage = function (creatorId, page) {
+        var requestUrl = this.serviceUrl + '?query={"_acl.creator":"' + creatorId + '"}&count=1000&limit=10&skip=' + (10 * (page - 1));
         return this.requester.get(requestUrl, true);
     };
 

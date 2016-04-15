@@ -33,6 +33,42 @@ var app = app || {};
            }
         });
 
+        this.before('#/office/(.*?)', function (data) {
+            var userId = sessionStorage['userId'],
+                params = data.path.split('/'),
+                page = params[params.length - 1];
+
+            if (!userId) {
+                this.redirect('#/');
+
+                return false;
+            }
+
+            if (!page) {
+                this.redirect('#/office/1');
+            } else {
+                this.redirect('#/office/' + page);
+            }
+        });
+
+        this.before('#/myNotes/(.*?)', function (data) {
+            var userId = sessionStorage['userId'],
+                params = data.path.split('/'),
+                page = params[params.length - 1];
+
+            if (!userId) {
+                this.redirect('#/');
+
+                return false;
+            }
+
+            if (!page) {
+                this.redirect('#/myNotes/1');
+            } else {
+                this.redirect('#/myNotes/' + page);
+            }
+        });
+
         this.get('#/login/', function () {
             userController.loadLoginPage(selector);
         });
@@ -57,12 +93,37 @@ var app = app || {};
             userController.logout();
         });
 
-        this.get('#/office/', function () {
-            notesController.loadNotes(selector);
+        this.get('#/office/(.*)', function (data) {
+            var params = data.path.split('/'),
+                page = params[params.length - 1];
+
+            if (!page) {
+                page = 1;
+            }
+
+            notesController.loadNotes(selector, page);
         });
 
-        this.get('#/myNotes/', function () {
-            notesController.loadMyNotes(selector);
+        this.get('#/myNotes/(.*)', function (data) {
+            var params = data.path.split('/'),
+                page = params[params.length - 1];
+
+            if (!page) {
+                page = 1;
+            }
+
+            notesController.loadMyNotes(selector, page);
+        });
+
+        this.get('#/myNotes/:page', function (data) {
+            var params = data.path.split('/'),
+                page = params[params.length - 1];
+
+            if (!page) {
+                page = 1;
+            }
+
+            notesController.loadMyNotes(selector, page);
         });
 
         this.get('#/addNote/', function () {

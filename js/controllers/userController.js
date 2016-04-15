@@ -21,7 +21,11 @@ app.userController = (function () {
                 Sammy(function () {
                     this.trigger('redirectUrl', {url: '#/home/'});
                 })
-            }).done();
+
+                Noty.success("Login successfully!");
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
+            });
     };
 
     UserController.prototype.loadRegisterPage = function(selector) {
@@ -38,7 +42,11 @@ app.userController = (function () {
                 Sammy(function () {
                     this.trigger('redirectUrl', {url: '#/home/'});
                 })
-            }).done();
+
+                Noty.success("Register successfully!");
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
+            });
     };
 
 
@@ -50,6 +58,10 @@ app.userController = (function () {
                 Sammy(function () {
                     this.trigger('redirectUrl', {url: '#/'});
                 })
+
+                Noty.success("Logout successfully!");
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 

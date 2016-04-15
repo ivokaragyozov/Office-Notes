@@ -6,51 +6,66 @@ app.notesController = (function () {
         this.model = model;
     }
 
-    NotesController.prototype.loadNotes = function (selector) {
+    NotesController.prototype.loadNotes = function (selector, page) {
         var _this = this;
         var date = new Date().toISOString().substr(0, 10);
 
-        this.model.getNotesForToday(date)
+        this.model.getNotesForTodayByPage(date, page)
             .then(function (data) {
                 var results = {
-                    notes: []
+                    notes: [], 
+                    count: 10
                 };
 
-                data.forEach(function (note) {
-                    results.notes.push({
-                        title: note.title,
-                        text: note.text,
-                        deadline: note.deadline,
-                        author: note.author,
-                        id: note._id
-                    })
-                });
+                _this.model.getNotesForToday(date)
+                    .then(function (data1) {
+                        results.count = data1.length;
+                        data.forEach(function (note) {
+                            results.notes.push({
+                                title: note.title,
+                                text: note.text,
+                                deadline: note.deadline,
+                                author: note.author,
+                                id: note._id
+                            })
+                        });
 
-                _this.viewBag.showNotes(selector, results);
+                        _this.viewBag.showNotes(selector, results);
+                    });
+            } , function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 
-    NotesController.prototype.loadMyNotes = function (selector) {
+    NotesController.prototype.loadMyNotes = function (selector, page) {
         var _this = this;
         var userId = sessionStorage['userId'];
 
-        this.model.getNotesByCreatorId(userId)
+        this.model.getNotesByCreatorIdByPage(userId, page)
             .then(function (data) {
                 var results = {
-                    notes: []
+                    notes: [],
+                    count: 10
                 };
 
-                data.forEach(function (note) {
-                    results.notes.push({
-                        title: note.title,
-                        text: note.text,
-                        deadline: note.deadline,
-                        author: note.author,
-                        id: note._id
-                    })
-                });
+                _this.model.getNotesByCreatorId(userId)
+                    .then(function (data1) {
+                        results.count = data1.length;
 
-                _this.viewBag.showMyNotes(selector, results);
+                        data.forEach(function (note) {
+                            results.notes.push({
+                                title: note.title,
+                                text: note.text,
+                                deadline: note.deadline,
+                                author: note.author,
+                                id: note._id
+                            })
+                        });
+
+                        _this.viewBag.showMyNotes(selector, results);
+                    });
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 
@@ -67,8 +82,10 @@ app.notesController = (function () {
         };
 
         this.model.addNote(newNote)
-            .then(function (seccess) {
-                console.log(success);
+            .then(function () {
+                Noty.success('Note added successfully!', 'top');
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 
@@ -80,8 +97,11 @@ app.notesController = (function () {
         data.author = sessionStorage['username'];
 
         this.model.editNote(data._id, data)
-            .then(function (seccess) {
-                console.log(success);
+            .then(function () {
+                window.location.reload('#/myNotes/');
+                Noty.success('Note edited successfully!', 'top');
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 
@@ -91,8 +111,11 @@ app.notesController = (function () {
 
     NotesController.prototype.deleteNote = function (noteId) {
         this.model.deleteNote(noteId)
-            .then(function (seccess) {
-                console.log(success);
+            .then(function () {
+                window.location.reload('#/myNotes/');
+                Noty.success('Note deleted successfully!', 'top');
+            }, function (error) {
+                Noty.error(error.responseJSON.error, 'top');
             });
     };
 
